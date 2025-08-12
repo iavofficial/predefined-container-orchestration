@@ -1,0 +1,85 @@
+# configure the nodes for the target system
+nodes:
+  node_b:
+    name: agent_B
+    cpu:
+      n_cores: 1
+      frequency: 1200000
+    memory: 1000
+    network: 100
+  node_c:
+    name: agent_C
+    cpu:
+      n_cores: 1
+      frequency: 1200000
+    memory: 250
+    network: 100
+
+# configure the services, that need to be orchestrated
+services:
+  predefined_app_1:
+    name: predefined_app_1
+    image: docker.io/rancher/pause:3.2
+    multiplicity: 1
+    scenarios:
+      - ODD1
+      - ODD2
+    policies:
+      task_normalized_instructions: 24000
+      task_period: 100
+      memory: 20
+      network:
+        provides: null
+        consumes: null
+
+  predefined_app_2:
+    name: predefined_app_2
+    image: docker.io/rancher/pause:3.2
+    multiplicity: 1
+    scenarios:
+      - ODD1
+    policies:
+      task_normalized_instructions: 36000
+      task_period: 100
+      memory: 20
+      network:
+        provides: null
+        consumes: null
+
+  predefined_app_3:
+    name: predefined_app_3
+    image: docker.io/rancher/pause:3.2
+    multiplicity: 1
+    scenarios:
+      - ODD2
+    policies:
+      task_normalized_instructions: 24000
+      task_period: 100
+      memory: 20
+      network:
+        provides: null
+        consumes: null
+
+# configure the used metrics for the Task Allocation Problem and their weights
+metrics:
+  SchedulerEDF:
+    is_active: true
+    weight: 1
+  NetworkLoad:
+    is_active: false
+    weight: 0
+  MemoryRAM:
+    is_active: true
+    weight: 0
+
+# configure the used scenarios for the Task Allocation Problem and their weights
+scenarios:
+  operation_scenarios:
+    - name: ODD1
+      transitions:
+        - ODD2
+    - name: ODD2
+      transitions:
+        - ODD1
+  failure_scenarios: false
+

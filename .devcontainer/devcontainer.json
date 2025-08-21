@@ -1,0 +1,66 @@
+{
+    "name": "${localWorkspaceFolderBasename}",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "../",
+        "args": {
+            "UV_VERSION": "0.7.21"
+        }
+    },
+    "postCreateCommand": "sudo chown -R vscode:vscode /workspace/", //only relevant on Windows host
+    "postStartCommand": "make setup",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+    "workspaceFolder": "/workspace/",
+    "remoteUser": "vscode",
+    "remoteEnv": {
+        "PYTHON_VERSION": "3.12"
+    },
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "icon": "terminal-bash",
+                        "path": "bash"
+                    }
+                },
+                "editor.detectIndentation": false,
+                "editor.formatOnSave": true,
+                "editor.tabSize": 4,
+                "editor.renderWhitespace": "all",
+                "files.encoding": "utf8",
+                "files.eol": "\r\n",
+                "files.insertFinalNewline": true,
+                "files.trimTrailingWhitespace": true,
+                "mypy.configFile": "pyproject.toml",
+                "mypy.dmypyExecutable": "${workspaceFolder}/.venv/bin/dmypy",
+                "pylint.path": [
+                    "${workspaceFolder}/.venv/bin/pylint"
+                ],
+                "pylint.args": [
+                    "--rcfile=/workspace/.devcontainer/.pylintrc"
+                ],
+                "python.analysis.extraPaths": [
+                    "${workspaceFolder}/.venv/lib/python3.12/site-packages"
+                ],
+                "python.defaultInterpreterPath": "./.venv/bin/python",
+                "python.terminal.activateEnvInCurrentTerminal": true,
+                "python.terminal.activateEnvironment": true,
+                "[python]": {
+                    "editor.defaultFormatter": "ms-python.black-formatter",
+                    "editor.rulers": [
+                        80
+                    ]
+                }
+            },
+            "extensions": [
+                "ms-python.python",
+                "ms-python.black-formatter",
+                "ms-python.pylint",
+                "matangover.mypy",
+                "ms-python.debugpy"
+            ]
+        }
+    }
+}

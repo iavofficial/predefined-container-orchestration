@@ -1,0 +1,46 @@
+version: 2
+
+nodes:
+  node_b:
+    name: agent_B
+    guarantees:
+      memory:
+        rom: 1000
+  node_c:
+    name: agent_C
+    guarantees:
+      memory:
+        rom: 250
+
+service_specifications:
+  predefined_app_1:
+    name: predefined_app_1
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        memory:
+          rom: 300
+      guarantees: {}
+    requirements: {}
+    scenarios: []
+
+  predefined_app_2:
+    name: predefined_app_2
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        memory:
+          rom: 300
+      guarantees: {}
+    requirements:
+      fail_op_level: 0
+      recon_time: 0
+    scenarios: []
+
+metrics:
+  MemoryROM:
+    is_active: true
+    weight: 0.0
+
+scenarios:
+  failure_scenarios: false

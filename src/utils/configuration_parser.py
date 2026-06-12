@@ -63,6 +63,13 @@ class NodeParser:
             mem.append(self.config[n]["memory"])
         return np.array(mem, dtype=int)
 
+    def get_mem_rom(self) -> np.ndarray:
+        """get array of memory for each node"""
+        mem = []
+        for n in self.config:
+            mem.append(self.config[n]["memory_rom"])
+        return np.array(mem, dtype=int)
+
 
 class ServiceParser:
     """class to create a parser for service related information"""
@@ -169,6 +176,13 @@ class ServiceParser:
             mem.append(self.config[s]["policies"]["memory"])
         return np.array(mem, dtype=int)
 
+    def get_mem_rom(self) -> np.ndarray:
+        """get an array of memory policies for each service"""
+        mem = []
+        for s in self.config:
+            mem.append(self.config[s]["policies"]["memory_rom"])
+        return np.array(mem, dtype=int)
+
     def get_active_services(self, scenario: str) -> np.ndarray:
         """
         get an array with all services
@@ -238,7 +252,9 @@ class ConfigParser:
         self.services: ServiceParser
         self.metrics: MetricParser
         self.scenarios: ScenarioParser
-        self._schema_path: Path | None = Path(META_SCHEMA_PATH) if META_SCHEMA_PATH else None
+        self._schema_path: Path | None = (
+            Path(META_SCHEMA_PATH) if META_SCHEMA_PATH else None
+        )
 
     def _validate_against_meta_schema(self, config: dict) -> None:
         if self._schema_path is None:
@@ -286,6 +302,7 @@ class ConfigParser:
                     },
                     # legacy schema only had "memory" as a single value -> map from RAM
                     "memory": mem.get("ram", 0),
+                    "memory_rom": mem.get("rom", 0),
                     "network": net if net is not None else 0,
                 }
 
@@ -314,6 +331,7 @@ class ConfigParser:
                     ),
                     "task_period": assumptions.get("task_period", 0),
                     "memory": mem_ass.get("ram", 0),
+                    "memory_rom": mem_ass.get("rom", 0),
                     "network": {
                         "provides": net_gua.get("provides") or [],
                         "consumes": net_ass.get("consumes") or [],

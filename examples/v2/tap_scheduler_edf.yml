@@ -1,0 +1,46 @@
+version: 2
+
+nodes:
+  node_b:
+    name: agent_B
+    guarantees:
+      cpu:
+        n_cores: 1
+        frequency: 1200000
+  node_c:
+    name: agent_C
+    guarantees:
+      cpu:
+        n_cores: 1
+        frequency: 1200000
+
+service_specifications:
+  predefined_app_1:
+    name: predefined_app_1
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        task_normalized_instructions: 8000
+        task_period: 10
+      guarantees: {}
+    requirements: {}
+    scenarios: []
+
+  predefined_app_2:
+    name: predefined_app_2
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        task_normalized_instructions: 8000
+        task_period: 10
+      guarantees: {}
+    requirements: {}
+    scenarios: []
+
+metrics:
+  SchedulerEDF:
+    is_active: true
+    weight: 1.0
+
+scenarios:
+  failure_scenarios: false

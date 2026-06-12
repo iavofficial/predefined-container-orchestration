@@ -1,0 +1,310 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "TAP Configuration Schema V1",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "version",
+        "nodes",
+        "services",
+        "metrics",
+        "scenarios"
+    ],
+    "properties": {
+        "version": {
+            "type": "integer",
+            "const": 1,
+            "description": "Configuration schema version (V1)"
+        },
+        "nodes": {
+            "type": "object",
+            "description": "Nodes: hardware resources of the target system",
+            "minProperties": 1,
+            "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "name",
+                    "cpu",
+                    "memory",
+                    "network"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Human-readable node name"
+                    },
+                    "cpu": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "n_cores",
+                            "frequency"
+                        ],
+                        "properties": {
+                            "n_cores": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Number of CPU cores [count]"
+                            },
+                            "frequency": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "CPU frequency [Hz]"
+                            }
+                        }
+                    },
+                    "memory": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Available memory [MB]"
+                    },
+                    "network": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Available network capacity [Mbit/s]"
+                    }
+                }
+            }
+        },
+        "services": {
+            "type": "object",
+            "description": "Services: applications/microservices to be orchestrated",
+            "minProperties": 1,
+            "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "name",
+                    "image",
+                    "policies"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Service name"
+                    },
+                    "image": {
+                        "type": "string",
+                        "description": "Container image reference as <name>:<tag>"
+                    },
+                    "scenarios": {
+                        "type": "array",
+                        "description": "List of operation scenarios where this service is enabled",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "policies": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "task_normalized_instructions",
+                            "task_period",
+                            "memory",
+                            "network"
+                        ],
+                        "properties": {
+                            "task_normalized_instructions": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Normalized instructions (runtime)"
+                            },
+                            "task_normalized_instructions_init": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Normalized instructions (initialization)"
+                            },
+                            "task_period": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Task period [ms]"
+                            },
+                            "fail_operational_level": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Fail operational level / number of instances required"
+                            },
+                            "ftti": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Fault-tolerant time interval [ms]"
+                            },
+                            "memory": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Memory requirement per service instance [MB]"
+                            },
+                            "network": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "provides": {
+                                        "description": "Provided network interfaces (may be null)",
+                                        "oneOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "additionalProperties": false,
+                                                    "required": [
+                                                        "interface",
+                                                        "type",
+                                                        "size",
+                                                        "period"
+                                                    ],
+                                                    "properties": {
+                                                        "interface": {
+                                                            "type": "string"
+                                                        },
+                                                        "type": {
+                                                            "type": "string"
+                                                        },
+                                                        "size": {
+                                                            "type": "integer",
+                                                            "minimum": 0
+                                                        },
+                                                        "period": {
+                                                            "type": "integer",
+                                                            "minimum": 0
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "consumes": {
+                                        "description": "Consumed network interfaces (may be null)",
+                                        "oneOf": [
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "additionalProperties": false,
+                                                    "required": [
+                                                        "interface",
+                                                        "type"
+                                                    ],
+                                                    "properties": {
+                                                        "interface": {
+                                                            "type": "string"
+                                                        },
+                                                        "type": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "metrics": {
+            "type": "object",
+            "description": "Metrics and their weights",
+            "patternProperties": {
+                "^(SchedulerEDF|NetworkLoad|MemoryRAM)$": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "is_active",
+                        "weight"
+                    ],
+                    "properties": {
+                        "is_active": {
+                            "type": "boolean"
+                        },
+                        "weight": {
+                            "type": "number"
+                        }
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "scenarios": {
+            "type": "object",
+            "description": "Configuration of failure / reconfiguration scenarios",
+            "additionalProperties": false,
+            "required": [],
+            "properties": {
+                "failure_scenarios": {
+                    "type": "boolean",
+                    "description": "Enable/disable failure scenarios"
+                },
+                "operation_scenarios": {
+                    "type": "array",
+                    "description": "List of operation scenarios and allowed transitions",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "name",
+                            "transitions"
+                        ],
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "transitions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "scenarios": {
+                        "type": "object",
+                        "properties": {
+                            "operation_scenarios": {},
+                            "failure_scenarios": {
+                                "const": true
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "scenarios"
+                ]
+            },
+            "then": {
+                "properties": {
+                    "services": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                                "policies": {
+                                    "type": "object",
+                                    "required": [
+                                        "task_normalized_instructions_init"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

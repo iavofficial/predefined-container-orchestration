@@ -1,3 +1,4 @@
+version: 1
 # configure the nodes for the target system
 nodes:
   node_b:
@@ -20,10 +21,10 @@ services:
   predefined_app_1:
     name: predefined_app_1
     image: docker.io/rancher/pause:3.2
-    multiplicity: 1
     policies:
-      task_normalized_instructions: 8000
-      task_period: 10
+      task_normalized_instructions: 24000
+      task_period: 100
+      fail_operational_level: 1
       memory: 20
       network:
         provides:
@@ -36,10 +37,10 @@ services:
   predefined_app_2:
     name: predefined_app_2
     image: docker.io/rancher/pause:3.2
-    multiplicity: 1
     policies:
-      task_normalized_instructions: 8000
-      task_period: 10
+      task_normalized_instructions: 36000
+      task_period: 100
+      fail_operational_level: 1
       memory: 20
       network:
         provides:
@@ -54,15 +55,14 @@ services:
 # configure the used metrics for the Task Allocation Problem and their weights
 metrics:
   SchedulerEDF:
-    is_active: true
-    weight: 1
-  NetworkLoad:
     is_active: false
     weight: 0
+  NetworkLoad:
+    is_active: true
+    weight: 1
   MemoryRAM:
     is_active: false
     weight: 0
 
-# configure the used scenarios for the Task Allocation Problem and their weights
 scenarios:
   failure_scenarios: false

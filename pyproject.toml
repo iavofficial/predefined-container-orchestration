@@ -1,13 +1,14 @@
 [project]
 name = "predefined_container_orchestration"
-version = "0.0.1"
+version = "0.1.0"
 authors = [{name = "Lukas Stahlbock", email = "lukas.stahlbock@iav.de"}]
 description = "Algorithm to calculate orchestrations for different scenarios"
 dependencies = [
     "cvxpy==1.4.3",
     "cylp==0.92.3",
     "pyscipopt==5.1.1",
-    "PyYAML==6.0.2"
+    "PyYAML==6.0.2",
+    "jsonschema==4.26.0"
 ]
 requires-python = "== 3.12.*"
 classifiers = [

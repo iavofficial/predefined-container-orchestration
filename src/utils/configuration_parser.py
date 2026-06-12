@@ -8,9 +8,14 @@
 #  Copyright (c) 2024 IAV GmbH Ingenieurgesellschaft Auto und Verkehr. All rights reserved.
 #
 """module provides a parser for the configuration file"""
+
+from pathlib import Path
+import copy
 import yaml
 import numpy as np
 from utils.logger import logger
+from utils.schema_validation import validate_with_meta_schema
+from utils.settings import META_SCHEMA_PATH
 
 
 class NodeParser:
@@ -233,6 +238,107 @@ class ConfigParser:
         self.services: ServiceParser
         self.metrics: MetricParser
         self.scenarios: ScenarioParser
+        self._schema_path: Path | None = Path(META_SCHEMA_PATH) if META_SCHEMA_PATH else None
+
+    def _validate_against_meta_schema(self, config: dict) -> None:
+        if self._schema_path is None:
+            logger.info(
+                "No meta schema env var set (%s); skipping schema validation",
+                self._schema_path,
+            )
+            return
+        logger.info(
+            "Validating configuration against schemas in: %s", self._schema_path
+        )
+        validate_with_meta_schema(config, self._schema_path)
+        logger.info(
+            "Configuration is valid against at least one schema in: %s",
+            self._schema_path,
+        )
+
+    def _normalize_new_schema_to_old(self, config: dict) -> dict:
+        """
+        Normalize V2 config (version == 2) into legacy V1 schema (nodes + services + policies).
+        For V1 (version == 1 or no version), return a copy unchanged.
+        """
+        cfg = copy.deepcopy(config)
+
+        version = cfg.get("version", 1)
+        if version != 2:
+            # V1 or unspecified → already in legacy format
+            return cfg
+
+        # -------- V2 → V1: nodes --------
+        # V2 nodes use guarantees: { cpu, memory {ram, rom}, network }
+        if "nodes" in cfg:
+            new_nodes = {}
+            for node_id, node_contract in cfg["nodes"].items():
+                guarantees = node_contract.get("guarantees", {})
+                cpu = guarantees.get("cpu", {})
+                mem = guarantees.get("memory", {})
+                net = guarantees.get("network", None)
+
+                new_nodes[node_id] = {
+                    "name": node_contract.get("name", node_id),
+                    "cpu": {
+                        "n_cores": cpu.get("n_cores", 0),
+                        "frequency": cpu.get("frequency", 0),
+                    },
+                    # legacy schema only had "memory" as a single value -> map from RAM
+                    "memory": mem.get("ram", 0),
+                    "network": net if net is not None else 0,
+                }
+
+            cfg["nodes"] = new_nodes
+
+        # -------- V2 → V1: services --------
+        # V2 uses service_specifications; we convert to legacy "services" + "policies"
+        if "service_specifications" in cfg:
+            cfg["services"] = {}
+            for svc_id, svc_contract in cfg["service_specifications"].items():
+                contract = svc_contract.get("contract", {})
+                assumptions = contract.get("assumptions", {})
+                guarantees = contract.get("guarantees", {})
+                requirements = svc_contract.get("requirements", {})
+
+                mem_ass = assumptions.get("memory", {})
+                net_ass = assumptions.get("network", {}) or {}
+                net_gua = guarantees.get("network", {}) or {}
+
+                policies = {
+                    "task_normalized_instructions": assumptions.get(
+                        "task_normalized_instructions", 0
+                    ),
+                    "task_normalized_instructions_init": assumptions.get(
+                        "task_normalized_instructions_init", 0
+                    ),
+                    "task_period": assumptions.get("task_period", 0),
+                    "memory": mem_ass.get("ram", 0),
+                    "network": {
+                        "provides": net_gua.get("provides") or [],
+                        "consumes": net_ass.get("consumes") or [],
+                    },
+                }
+
+                # Map V2 requirements → legacy policy fields
+                if "fail_op_level" in requirements:
+                    policies["fail_operational_level"] = requirements["fail_op_level"]
+                if "recon_time" in requirements:
+                    policies["ftti"] = requirements["recon_time"]
+
+                svc_entry = {
+                    "name": svc_contract.get("name", svc_id),
+                    "image": svc_contract.get("image", ""),
+                    "policies": policies,
+                }
+
+                scenarios = svc_contract.get("scenarios")
+                if scenarios:
+                    svc_entry["scenarios"] = list(scenarios)
+
+                cfg["services"][svc_id] = svc_entry
+
+        return cfg
 
     def parse(self, filepath: str):
         """parse the configuration file"""
@@ -246,24 +352,31 @@ class ConfigParser:
             encoding="utf-8",
         ) as stream:
             try:
-                config = yaml.safe_load(stream)
-                logger.debug(config)
+                raw_config = yaml.safe_load(stream)
+                logger.debug(raw_config)
             except yaml.YAMLError as error:
                 logger.exception(error)
+                raise
+
+        # Validate raw_config against JSON Schema
+        self._validate_against_meta_schema(raw_config)
 
         logger.info(
             "Imported the configurations file: %s",
             filepath,
         )
 
+        # Normalize possible new schema into old internal schema
+        config = self._normalize_new_schema_to_old(raw_config)
+
         self.nodes = NodeParser(config["nodes"])
         self.services = ServiceParser(config["services"])
-        self.metrics = MetricParser(config["metrics"])
+        self.metrics = MetricParser(config.get("metrics", {}))
 
-        if (
-            "scenarios" not in config
-            or "operation_scenarios" not in config["scenarios"]
-        ):
+        if "scenarios" not in config:
+            config["scenarios"] = {}
+
+        if "operation_scenarios" not in config["scenarios"]:
             config["scenarios"]["operation_scenarios"] = [
                 {"name": "Default", "transitions": []}
             ]

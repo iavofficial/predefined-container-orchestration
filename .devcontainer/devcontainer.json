@@ -13,7 +13,8 @@
     "workspaceFolder": "/workspace/",
     "remoteUser": "vscode",
     "remoteEnv": {
-        "PYTHON_VERSION": "3.12"
+        "PYTHON_VERSION": "3.12",
+        "META_SCHEMA_PATH": "/workspace/config/tap-config-meta.schema.json"
     },
     "customizations": {
         "vscode": {
@@ -52,6 +53,14 @@
                     "editor.rulers": [
                         80
                     ]
+                },
+                "yaml.schemas": {
+                    "file:///workspace/config/tap-config-meta.schema.json": [
+                        "tap-*.yml",
+                        "tap-*.yaml",
+                        "tap_*.yml",
+                        "tap_*.yaml"
+                    ]
                 }
             },
             "extensions": [
@@ -59,7 +68,8 @@
                 "ms-python.black-formatter",
                 "ms-python.pylint",
                 "matangover.mypy",
-                "ms-python.debugpy"
+                "ms-python.debugpy",
+                "redhat.vscode-yaml"
             ]
         }
     }

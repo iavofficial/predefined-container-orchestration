@@ -1,0 +1,44 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "TAP Configuration Meta-Schema",
+    "oneOf": [
+        {
+            "description": "V1 configuration",
+            "allOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "version": {
+                            "const": 1
+                        }
+                    },
+                    "required": [
+                        "version"
+                    ]
+                },
+                {
+                    "$ref": "file:///workspace/config/tap-config-v1.schema.json"
+                }
+            ]
+        },
+        {
+            "description": "V2 configuration",
+            "allOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "version": {
+                            "const": 2
+                        }
+                    },
+                    "required": [
+                        "version"
+                    ]
+                },
+                {
+                    "$ref": "file:///workspace/config/tap-config-v2.schema.json"
+                }
+            ]
+        }
+    ]
+}

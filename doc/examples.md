@@ -10,7 +10,7 @@ Configuration:
 TAP will allocate both services on a different node because otherwise the EDF schedulability constraint would be violated.
 
 ```bash
-make run-example FILENAME=scheduler_edf_config.yml
+make run-example FILENAME=v2/tap_scheduler_edf.yml
 ```
 
 ## Memory - RAM
@@ -23,7 +23,7 @@ Configuration:
 TAP will allocate both services on the node with 1000MB RAM because otherwise the MemoryRAM constraint would be violated.
 
 ```bash
-make run-example FILENAME=memory_ram_config.yml
+make run-example FILENAME=v2/tap_memory_ram.yml
 ```
 
 ## Network Load
@@ -36,7 +36,7 @@ Configuration:
 TAP will allocate both services on the same node because this minimizes the objective value (the used network bandwidth / network load)
 
 ```bash
-make run-example FILENAME=network_load_config.yml
+make run-example FILENAME=v2/tap_network_load.yml
 ```
 
 ## Failure Scenarios
@@ -49,12 +49,12 @@ Configuration:
 TAP will allocate all services on different nodes because this minimizes the objective value (the number of reconfigurations in case of a failure)
 
 ```bash
-make run-example FILENAME=failure_scenarios_config.yml
+make run-example FILENAME=v2/tap_failure_scenarios.yml
 ```
 
 ## All Metrics
 Example how to use all metrics. Currently, it is just some arbitrary data. It would be better to design it in a way, so that it can be easily checked if the algorithm works as expected (e.g. by creating some service clusters and checking that they are assigned on the same nodes).
 
 ```bash
-make run-example FILENAME=all_metrics_config.yml
+make run-example FILENAME=v2/tap_all_metrics.yml
 ```

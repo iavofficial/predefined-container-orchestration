@@ -1,0 +1,253 @@
+version: 2
+
+nodes:
+  node_b:
+    name: agent_B
+    guarantees:
+      cpu:
+        n_cores: 1
+        frequency: 1200000
+      memory:
+        ram: 1000
+      network: 100
+  node_c:
+    name: agent_C
+    guarantees:
+      cpu:
+        n_cores: 2
+        frequency: 1200000
+      memory:
+        ram: 250
+      network: 100
+  node_d:
+    name: agent_D
+    guarantees:
+      cpu:
+        n_cores: 1
+        frequency: 1200000
+      memory:
+        ram: 250
+      network: 100
+
+service_specifications:
+  predefined_app_1:
+    name: predefined_app_1
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        task_normalized_instructions: 24000
+        task_period: 100
+        memory:
+          ram: 200
+        network:
+          consumes:
+            - interface: app_5_1
+              type: unicast
+            - interface: app_7_1
+              type: unicast
+      guarantees:
+        network:
+          provides:
+            - interface: app_1_1
+              type: unicast
+              size: 1000
+              period: 20
+    requirements: {}
+    scenarios: []
+
+  predefined_app_2:
+    name: predefined_app_2
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        task_normalized_instructions: 36000
+        task_period: 100
+        memory:
+          ram: 200
+        network:
+          consumes:
+            - interface: app_1_1
+              type: unicast
+            - interface: app_7_2
+              type: unicast
+      guarantees:
+        network:
+          provides:
+            - interface: app_2_1
+              type: unicast
+              size: 1000
+              period: 10
+    requirements: {}
+    scenarios: []
+
+  predefined_app_3:
+    name: predefined_app_3
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        task_normalized_instructions: 24000
+        task_period: 50
+        memory:
+          ram: 200
+        network:
+          consumes:
+            - interface: app_2_1
+              type: unicast
+            - interface: app_8_1
+              type: unicast
+      guarantees:
+        network:
+          provides:
+            - interface: app_3_1
+              type: unicast
+              size: 750
+              period: 10
+    requirements: {}
+    scenarios: []
+
+  predefined_app_4:
+    name: predefined_app_4
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        task_normalized_instructions: 36000
+        task_period: 200
+        memory:
+          ram: 200
+        network:
+          consumes:
+            - interface: app_3_1
+              type: unicast
+      guarantees:
+        network:
+          provides:
+            - interface: app_4_1
+              type: unicast
+              size: 2000
+              period: 100
+            - interface: app_4_2
+              type: unicast
+              size: 600
+              period: 10
+    requirements: {}
+    scenarios: []
+
+  predefined_app_5:
+    name: predefined_app_5
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        task_normalized_instructions: 12000
+        task_period: 500
+        memory:
+          ram: 200
+        network:
+          consumes:
+            - interface: app_6_1
+              type: unicast
+            - interface: app_8_2
+              type: unicast
+      guarantees:
+        network:
+          provides:
+            - interface: app_5_1
+              type: unicast
+              size: 1000
+              period: 100
+            - interface: app_5_2
+              type: unicast
+              size: 800
+              period: 10
+    requirements: {}
+    scenarios: []
+
+  predefined_app_6:
+    name: predefined_app_6
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        task_normalized_instructions: 18000
+        task_period: 50
+        memory:
+          ram: 20
+        network:
+          consumes:
+            - interface: app_5_2
+              type: unicast
+      guarantees:
+        network:
+          provides:
+            - interface: app_6_1
+              type: unicast
+              size: 1500
+              period: 100
+    requirements: {}
+    scenarios: []
+
+  predefined_app_7:
+    name: predefined_app_7
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        task_normalized_instructions: 36000
+        task_period: 200
+        memory:
+          ram: 20
+        network:
+          consumes:
+            - interface: app_4_1
+              type: unicast
+      guarantees:
+        network:
+          provides:
+            - interface: app_7_1
+              type: unicast
+              size: 1000
+              period: 100
+            - interface: app_7_2
+              type: unicast
+              size: 2000
+              period: 100
+    requirements: {}
+    scenarios: []
+
+  predefined_app_8:
+    name: predefined_app_8
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        task_normalized_instructions: 12000
+        task_period: 500
+        memory:
+          ram: 20
+        network:
+          consumes:
+            - interface: app_4_2
+              type: unicast
+      guarantees:
+        network:
+          provides:
+            - interface: app_8_1
+              type: unicast
+              size: 300
+              period: 10
+            - interface: app_8_2
+              type: unicast
+              size: 1400
+              period: 20
+    requirements: {}
+    scenarios: []
+
+metrics:
+  SchedulerEDF:
+    is_active: true
+    weight: 0.5
+  NetworkLoad:
+    is_active: true
+    weight: 0.5
+  MemoryRAM:
+    is_active: true
+    weight: 0.0
+
+scenarios:
+  failure_scenarios: false

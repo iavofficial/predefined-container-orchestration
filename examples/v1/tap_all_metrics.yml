@@ -1,3 +1,4 @@
+version: 1
 # configure the nodes for the target system
 nodes:
   node_b:
@@ -27,10 +28,10 @@ services:
   predefined_app_1:
     name: predefined_app_1
     image: docker.io/rancher/pause:3.2
-    multiplicity: 1
     policies:
       task_normalized_instructions: 24000
       task_period: 100
+      fail_operational_level: 1
       memory: 200
       network:
         provides:
@@ -47,10 +48,10 @@ services:
   predefined_app_2:
     name: predefined_app_2
     image: docker.io/rancher/pause:3.2
-    multiplicity: 1
     policies:
       task_normalized_instructions: 36000
       task_period: 100
+      fail_operational_level: 1
       memory: 200
       network:
         provides:
@@ -67,10 +68,10 @@ services:
   predefined_app_3:
     name: predefined_app_3
     image: docker.io/rancher/pause:3.2
-    multiplicity: 1
     policies:
       task_normalized_instructions: 24000
       task_period: 50
+      fail_operational_level: 1
       memory: 200
       network:
         provides:
@@ -87,10 +88,10 @@ services:
   predefined_app_4:
     name: predefined_app_4
     image: docker.io/rancher/pause:3.2
-    multiplicity: 1
     policies:
       task_normalized_instructions: 36000
       task_period: 200
+      fail_operational_level: 1
       memory: 200
       network:
         provides:
@@ -109,10 +110,10 @@ services:
   predefined_app_5:
     name: predefined_app_5
     image: docker.io/rancher/pause:3.2
-    multiplicity: 1
     policies:
       task_normalized_instructions: 12000
       task_period: 500
+      fail_operational_level: 1
       memory: 200
       network:
         provides:
@@ -133,10 +134,10 @@ services:
   predefined_app_6:
     name: predefined_app_6
     image: docker.io/rancher/pause:3.2
-    multiplicity: 1
     policies:
       task_normalized_instructions: 18000
       task_period: 50
+      fail_operational_level: 1
       memory: 20
       network:
         provides:
@@ -151,10 +152,10 @@ services:
   predefined_app_7:
     name: predefined_app_7
     image: docker.io/rancher/pause:3.2
-    multiplicity: 1
     policies:
       task_normalized_instructions: 36000
       task_period: 200
+      fail_operational_level: 1
       memory: 20
       network:
         provides:
@@ -173,10 +174,10 @@ services:
   predefined_app_8:
     name: predefined_app_8
     image: docker.io/rancher/pause:3.2
-    multiplicity: 1
     policies:
       task_normalized_instructions: 12000
       task_period: 500
+      fail_operational_level: 1
       memory: 20
       network:
         provides:
@@ -194,15 +195,15 @@ services:
 
 # configure the used metrics for the Task Allocation Problem and their weights
 metrics:
-    SchedulerEDF:
-      is_active: true
-      weight: 0.5
-    NetworkLoad:
-      is_active: true
-      weight: 0.5
-    MemoryRAM:
-      is_active: true
-      weight: 0
+  SchedulerEDF:
+    is_active: true
+    weight: 0.5
+  NetworkLoad:
+    is_active: true
+    weight: 0.5
+  MemoryRAM:
+    is_active: true
+    weight: 0
 
 scenarios:
   failure_scenarios: false

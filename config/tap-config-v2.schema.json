@@ -1,0 +1,534 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "TAP Configuration Schema V2",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "version",
+        "nodes",
+        "service_specifications",
+        "metrics",
+        "scenarios"
+    ],
+    "properties": {
+        "version": {
+            "type": "integer",
+            "const": 2,
+            "description": "Configuration schema version (V2)"
+        },
+        "nodes": {
+            "type": "object",
+            "description": "Nodes: hardware resources of the target system",
+            "minProperties": 1,
+            "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "name",
+                    "guarantees"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Human-readable node name"
+                    },
+                    "guarantees": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "cpu": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                    "n_cores",
+                                    "frequency"
+                                ],
+                                "properties": {
+                                    "n_cores": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "description": "Number of CPU cores [count]"
+                                    },
+                                    "frequency": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "description": "CPU frequency [Hz]"
+                                    }
+                                }
+                            },
+                            "memory": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "ram": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "description": "Available RAM guarantee [MB]"
+                                    }
+                                }
+                            },
+                            "network": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Available network capacity [Mbit/s]"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "service_specifications": {
+            "type": "object",
+            "description": "Services: applications/microservices to be orchestrated",
+            "minProperties": 1,
+            "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                    "name",
+                    "image",
+                    "contract",
+                    "requirements",
+                    "scenarios"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Service name, typically same as key"
+                    },
+                    "image": {
+                        "type": "string",
+                        "description": "Container image reference as <name>:<tag>"
+                    },
+                    "contract": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "assumptions",
+                            "guarantees"
+                        ],
+                        "properties": {
+                            "assumptions": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "task_normalized_instructions": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "description": "Normalized instructions (e.g. from WCET/model)"
+                                    },
+                                    "task_normalized_instructions_init": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "description": "Normalized instructions (initialization)"
+                                    },
+                                    "task_period": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "description": "Task period [ms]"
+                                    },
+                                    "memory": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "ram": {
+                                                "type": "integer",
+                                                "minimum": 0,
+                                                "description": "RAM requirement per service instance [MB]"
+                                            }
+                                        }
+                                    },
+                                    "network": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "consumes": {
+                                                "description": "Consumed network interfaces",
+                                                "oneOf": [
+                                                    {
+                                                        "type": "null"
+                                                    },
+                                                    {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "additionalProperties": false,
+                                                            "required": [
+                                                                "interface",
+                                                                "type"
+                                                            ],
+                                                            "properties": {
+                                                                "interface": {
+                                                                    "type": "string",
+                                                                    "description": "Consumed interface name (must match a provides/interface)"
+                                                                },
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "description": "Communication type (e.g. 'unicast', 'multicast')"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "guarantees": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "network": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "provides": {
+                                                "description": "Provided network interfaces",
+                                                "oneOf": [
+                                                    {
+                                                        "type": "null"
+                                                    },
+                                                    {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "additionalProperties": false,
+                                                            "required": [
+                                                                "interface",
+                                                                "type",
+                                                                "size",
+                                                                "period"
+                                                            ],
+                                                            "properties": {
+                                                                "interface": {
+                                                                    "type": "string",
+                                                                    "description": "Provided interface name, e.g. 'app_1_1'"
+                                                                },
+                                                                "type": {
+                                                                    "type": "string",
+                                                                    "description": "Communication type ('unicast', 'multicast')"
+                                                                },
+                                                                "size": {
+                                                                    "type": "integer",
+                                                                    "minimum": 0,
+                                                                    "description": "Message size [bytes]"
+                                                                },
+                                                                "period": {
+                                                                    "type": "integer",
+                                                                    "minimum": 0,
+                                                                    "description": "Message period [ms]"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "requirements": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "fail_op_level": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Number of instances required [count]"
+                            },
+                            "recon_time": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "description": "Reconfiguration time limit [ms]"
+                            }
+                        }
+                    },
+                    "scenarios": {
+                        "type": "array",
+                        "description": "List of operation scenarios where service must be enabled",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "metrics": {
+            "type": "object",
+            "description": "Metrics and their weights",
+            "patternProperties": {
+                "^(SchedulerEDF|NetworkLoad|MemoryRAM)$": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "is_active",
+                        "weight"
+                    ],
+                    "properties": {
+                        "is_active": {
+                            "type": "boolean"
+                        },
+                        "weight": {
+                            "type": "number"
+                        }
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "scenarios": {
+            "type": "object",
+            "description": "Configuration of failure / reconfiguration scenarios",
+            "additionalProperties": false,
+            "required": [],
+            "properties": {
+                "operation_scenarios": {
+                    "type": "array",
+                    "description": "List of operation scenarios and allowed transitions",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                            "name",
+                            "transitions"
+                        ],
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "Name of operation scenario, e.g. ODD1"
+                            },
+                            "transitions": {
+                                "type": "array",
+                                "description": "List of allowed scenario transitions",
+                                "items": {
+                                    "type": "string",
+                                    "description": "Name of allowed transition, e.g. ODD2"
+                                }
+                            }
+                        }
+                    }
+                },
+                "failure_scenarios": {
+                    "type": "boolean",
+                    "description": "Enable/disable failure scenarios"
+                }
+            }
+        }
+    },
+    "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "scenarios": {
+                        "type": "object",
+                        "properties": {
+                            "operation_scenarios": {},
+                            "failure_scenarios": {
+                                "const": true
+                            }
+                        }
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "service_specifications": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                                "contract": {
+                                    "type": "object",
+                                    "properties": {
+                                        "assumptions": {
+                                            "type": "object",
+                                            "required": [
+                                                "task_normalized_instructions_init"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "metrics": {
+                        "type": "object",
+                        "properties": {
+                            "SchedulerEDF": {
+                                "type": "object",
+                                "properties": {
+                                    "is_active": {
+                                        "const": true
+                                    }
+                                },
+                                "required": [
+                                    "is_active"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "SchedulerEDF"
+                        ]
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "nodes": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                                "guarantees": {
+                                    "type": "object",
+                                    "required": [
+                                        "cpu"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "service_specifications": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                                "contract": {
+                                    "type": "object",
+                                    "properties": {
+                                        "assumptions": {
+                                            "type": "object",
+                                            "required": [
+                                                "task_normalized_instructions",
+                                                "task_period"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "metrics": {
+                        "type": "object",
+                        "properties": {
+                            "NetworkLoad": {
+                                "type": "object",
+                                "properties": {
+                                    "is_active": {
+                                        "const": true
+                                    }
+                                },
+                                "required": [
+                                    "is_active"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "NetworkLoad"
+                        ]
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "service_specifications": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                                "contract": {
+                                    "type": "object",
+                                    "properties": {
+                                        "assumptions": {
+                                            "type": "object",
+                                            "required": [
+                                                "network"
+                                            ]
+                                        },
+                                        "guarantees": {
+                                            "type": "object",
+                                            "required": [
+                                                "network"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "metrics": {
+                        "type": "object",
+                        "properties": {
+                            "MemoryRAM": {
+                                "type": "object",
+                                "properties": {
+                                    "is_active": {
+                                        "const": true
+                                    }
+                                },
+                                "required": [
+                                    "is_active"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "MemoryRAM"
+                        ]
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "service_specifications": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                                "contract": {
+                                    "type": "object",
+                                    "properties": {
+                                        "assumptions": {
+                                            "type": "object",
+                                            "required": [
+                                                "memory"
+                                            ],
+                                            "properties": {
+                                                "memory": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "ram"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,98 @@
+version: 2
+
+nodes:
+  node_b:
+    name: agent_B
+    guarantees:
+      cpu:
+        n_cores: 1
+        frequency: 1200000
+      memory:
+        ram: 1000
+      network: 100
+  node_c:
+    name: agent_C
+    guarantees:
+      cpu:
+        n_cores: 1
+        frequency: 1200000
+      memory:
+        ram: 250
+      network: 100
+
+service_specifications:
+  predefined_app_1:
+    name: predefined_app_1
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        task_normalized_instructions: 24000
+        task_period: 100
+        memory:
+          ram: 20
+        network: {}
+      guarantees:
+        network: {}
+    requirements:
+      fail_op_level: 0
+      recon_time: 1000
+    scenarios:
+      - ODD1
+      - ODD2
+
+  predefined_app_2:
+    name: predefined_app_2
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        task_normalized_instructions: 36000
+        task_period: 100
+        memory:
+          ram: 20
+        network: {}
+      guarantees:
+        network: {}
+    requirements:
+      fail_op_level: 0
+      recon_time: 1000
+    scenarios:
+      - ODD1
+
+  predefined_app_3:
+    name: predefined_app_3
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        task_normalized_instructions: 24000
+        task_period: 100
+        memory:
+          ram: 20
+        network: {}
+      guarantees:
+        network: {}
+    requirements:
+      fail_op_level: 0
+      recon_time: 1000
+    scenarios:
+      - ODD2
+
+metrics:
+  SchedulerEDF:
+    is_active: true
+    weight: 1.0
+  NetworkLoad:
+    is_active: false
+    weight: 0.0
+  MemoryRAM:
+    is_active: true
+    weight: 0.0
+
+scenarios:
+  operation_scenarios:
+    - name: ODD1
+      transitions:
+        - ODD2
+    - name: ODD2
+      transitions:
+        - ODD1
+  failure_scenarios: false

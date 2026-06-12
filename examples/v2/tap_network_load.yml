@@ -1,0 +1,55 @@
+version: 2
+
+nodes:
+  node_b:
+    name: agent_B
+    guarantees:
+      network: 100
+  node_c:
+    name: agent_C
+    guarantees:
+      network: 100
+
+service_specifications:
+  predefined_app_1:
+    name: predefined_app_1
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        network: {}
+      guarantees:
+        network:
+          provides:
+            - interface: app_1
+              type: unicast
+              size: 1000
+              period: 20
+    requirements: {}
+    scenarios: []
+
+  predefined_app_2:
+    name: predefined_app_2
+    image: docker.io/rancher/pause:3.2
+    contract:
+      assumptions:
+        network:
+          consumes:
+            - interface: app_1
+              type: unicast
+      guarantees:
+        network:
+          provides:
+            - interface: app_2
+              type: unicast
+              size: 1000
+              period: 10
+    requirements: {}
+    scenarios: []
+
+metrics:
+  NetworkLoad:
+    is_active: true
+    weight: 1.0
+
+scenarios:
+  failure_scenarios: false

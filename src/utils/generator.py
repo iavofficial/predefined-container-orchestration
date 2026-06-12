@@ -122,28 +122,33 @@ class Generator:
         """retrieve a list of command options for service"""
         command_options: list[str] = []
 
-        cpu_runtime_us: int = int(
-            float(service_data["policies"]["task_normalized_instructions"])
-            / node_data["cpu"]["frequency"]
-            * 1000**2
-        )
-        cpu_period_us: int = int(service_data["policies"]["task_period"]) * 1000
-        # cpu: float = cpu_runtime_us / cpu_period_us
-
-        # command_options.extend(["--cpus", str(cpu)])
-        command_options.extend(
+        if service_data["policies"]["task_normalized_instructions"]:
+            cpu_runtime_us: int = int(
+                float(service_data["policies"]["task_normalized_instructions"])
+                / node_data["cpu"]["frequency"]
+                * 1000**2
+            )
+            command_options.extend(
             [
                 "--cpu-rt-runtime",
                 str(cpu_runtime_us),
             ]
         )
-        command_options.extend(
-            [
-                "--cpu-rt-period",
-                str(cpu_period_us),
-            ]
-        )
-        command_options.extend(["-m", str(service_data["policies"]["memory"]) + "M"])
+
+        if service_data["policies"]["task_period"]:
+            cpu_period_us: int = int(service_data["policies"]["task_period"]) * 1000
+
+            command_options.extend(
+                [
+                    "--cpu-rt-period",
+                    str(cpu_period_us),
+                ]
+            )
+
+        # cpu: float = cpu_runtime_us / cpu_period_us
+        # command_options.extend(["--cpus", str(cpu)])
+        if service_data["policies"]["memory"]:
+            command_options.extend(["-m", str(service_data["policies"]["memory"]) + "M"])
 
         return command_options
 

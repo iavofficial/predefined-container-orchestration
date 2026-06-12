@@ -1,3 +1,4 @@
+version: 1
 # configure the nodes for the target system
 nodes:
   node_b:
@@ -12,7 +13,14 @@ nodes:
     cpu:
       n_cores: 1
       frequency: 1200000
-    memory: 250
+    memory: 800
+    network: 100
+  node_d:
+    name: agent_D
+    cpu:
+      n_cores: 1
+      frequency: 1200000
+    memory: 300
     network: 100
 
 # configure the services, that need to be orchestrated
@@ -20,14 +28,16 @@ services:
   predefined_app_1:
     name: predefined_app_1
     image: docker.io/rancher/pause:3.2
-    multiplicity: 1
     scenarios:
       - ODD1
       - ODD2
     policies:
       task_normalized_instructions: 24000
+      task_normalized_instructions_init: 50000
       task_period: 100
-      memory: 20
+      fail_operational_level: 1
+      ftti: 1000
+      memory: 500
       network:
         provides: null
         consumes: null
@@ -35,13 +45,16 @@ services:
   predefined_app_2:
     name: predefined_app_2
     image: docker.io/rancher/pause:3.2
-    multiplicity: 1
     scenarios:
       - ODD1
+      - ODD2
     policies:
       task_normalized_instructions: 36000
+      task_normalized_instructions_init: 50000
       task_period: 100
-      memory: 20
+      fail_operational_level: 1
+      ftti: 1000
+      memory: 300
       network:
         provides: null
         consumes: null
@@ -49,13 +62,33 @@ services:
   predefined_app_3:
     name: predefined_app_3
     image: docker.io/rancher/pause:3.2
-    multiplicity: 1
     scenarios:
+      - ODD1
       - ODD2
     policies:
       task_normalized_instructions: 24000
+      task_normalized_instructions_init: 80000
       task_period: 100
-      memory: 20
+      fail_operational_level: 1
+      ftti: 100
+      memory: 150
+      network:
+        provides: null
+        consumes: null
+
+  predefined_app_4:
+    name: predefined_app_4
+    image: docker.io/rancher/pause:3.2
+    scenarios:
+      - ODD1
+      - ODD2
+    policies:
+      task_normalized_instructions: 24000
+      task_normalized_instructions_init: 80000
+      task_period: 100
+      fail_operational_level: 1
+      ftti: 1500
+      memory: 150
       network:
         provides: null
         consumes: null
@@ -74,6 +107,7 @@ metrics:
 
 # configure the used scenarios for the Task Allocation Problem and their weights
 scenarios:
+  failure_scenarios: true
   operation_scenarios:
     - name: ODD1
       transitions:
@@ -81,5 +115,3 @@ scenarios:
     - name: ODD2
       transitions:
         - ODD1
-  failure_scenarios: false
-

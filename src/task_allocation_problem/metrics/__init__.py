@@ -14,7 +14,7 @@ from enum import Enum
 from task_allocation_problem.metrics.metric import Metric
 from task_allocation_problem.metrics.network import NetworkLoad, NetworkLoadQuad
 from task_allocation_problem.metrics.scheduler import SchedulerEDF
-from task_allocation_problem.metrics.memory import MemoryRAM
+from task_allocation_problem.metrics.memory import MemoryRAM, MemoryROM
 from task_allocation_problem.metrics.scenarios import FaultToleranceTimeInterval
 
 __all__ = ["get_metric"]
@@ -23,6 +23,7 @@ __all__ = ["get_metric"]
 METRICS: dict[str, type[Metric]] = {
     "SchedulerEDF": SchedulerEDF,
     "MemoryRAM": MemoryRAM,
+    "MemoryROM": MemoryROM,
     "NetworkLoad": NetworkLoad,
 }
 

@@ -64,6 +64,11 @@
                                         "type": "integer",
                                         "minimum": 0,
                                         "description": "Available RAM guarantee [MB]"
+                                    },
+                                    "rom": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "description": "Available ROM guarantee [MB]"
                                     }
                                 }
                             },
@@ -135,6 +140,11 @@
                                                 "type": "integer",
                                                 "minimum": 0,
                                                 "description": "RAM requirement per service instance [MB]"
+                                            },
+                                            "rom": {
+                                                "type": "integer",
+                                                "minimum": 0,
+                                                "description": "ROM requirement per service instance [MB]"
                                             }
                                         }
                                     },
@@ -260,7 +270,7 @@
             "type": "object",
             "description": "Metrics and their weights",
             "patternProperties": {
-                "^(SchedulerEDF|NetworkLoad|MemoryRAM)$": {
+                "^(SchedulerEDF|NetworkLoad|MemoryRAM|MemoryROM)$": {
                     "type": "object",
                     "additionalProperties": false,
                     "required": [
@@ -500,6 +510,28 @@
             },
             "then": {
                 "properties": {
+                    "nodes": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                                "guarantees": {
+                                    "type": "object",
+                                    "required": [
+                                        "memory"
+                                    ],
+                                    "properties": {
+                                        "memory": {
+                                            "type": "object",
+                                            "required": [
+                                                "ram"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
                     "service_specifications": {
                         "type": "object",
                         "additionalProperties": {
@@ -519,6 +551,86 @@
                                                     "required": [
                                                         "ram"
                                                     ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "metrics": {
+                        "type": "object",
+                        "properties": {
+                            "MemoryROM": {
+                                "type": "object",
+                                "properties": {
+                                    "is_active": {
+                                        "const": true
+                                    }
+                                },
+                                "required": [
+                                    "is_active"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "MemoryROM"
+                        ]
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "properties": {
+                        "nodes": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "object",
+                                "properties": {
+                                    "guarantees": {
+                                        "type": "object",
+                                        "required": [
+                                            "memory"
+                                        ],
+                                        "properties": {
+                                            "memory": {
+                                                "type": "object",
+                                                "required": [
+                                                    "rom"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "service_specifications": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "object",
+                                "properties": {
+                                    "contract": {
+                                        "type": "object",
+                                        "properties": {
+                                            "assumptions": {
+                                                "type": "object",
+                                                "required": [
+                                                    "memory"
+                                                ],
+                                                "properties": {
+                                                    "memory": {
+                                                        "type": "object",
+                                                        "required": [
+                                                            "rom"
+                                                        ]
+                                                    }
                                                 }
                                             }
                                         }

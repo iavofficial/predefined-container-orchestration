@@ -19,8 +19,9 @@ Currently included metrics are:
 | -----| ------|
 | SchedulerEDF | linear |
 | MemoryRAM | linear |
-| NetworkLoad | linear (quadratic but has been linearized) |
-| FaultToleranceTimeInterval | linear (quadratic bus has been linearized) |
+| MemoryROM | linear |
+| NetworkLoad | linear (quadratic, but has been linearized) |
+| FaultToleranceTimeInterval | linear (quadratic, but has been linearized) |
 
 The algorithm will check the order of all metrics. If all metrics are linear, CBC solver will be used. If any metric is not linear, SCIP solver will be used.
 

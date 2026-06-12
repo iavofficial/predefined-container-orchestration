@@ -9,6 +9,7 @@ nodes:
         frequency: 1200000
       memory:
         ram: 1000
+        rom: 10000
       network: 100
   node_c:
     name: agent_C
@@ -18,6 +19,7 @@ nodes:
         frequency: 1200000
       memory:
         ram: 250
+        rom: 10000
       network: 100
   node_d:
     name: agent_D
@@ -27,6 +29,7 @@ nodes:
         frequency: 1200000
       memory:
         ram: 250
+        rom: 10000
       network: 100
 
 service_specifications:
@@ -39,6 +42,7 @@ service_specifications:
         task_period: 100
         memory:
           ram: 200
+          rom: 1000
         network:
           consumes:
             - interface: app_5_1
@@ -64,6 +68,7 @@ service_specifications:
         task_period: 100
         memory:
           ram: 200
+          rom: 5000
         network:
           consumes:
             - interface: app_1_1
@@ -89,6 +94,7 @@ service_specifications:
         task_period: 50
         memory:
           ram: 200
+          rom: 4000
         network:
           consumes:
             - interface: app_2_1
@@ -114,6 +120,7 @@ service_specifications:
         task_period: 200
         memory:
           ram: 200
+          rom: 1000
         network:
           consumes:
             - interface: app_3_1
@@ -141,6 +148,7 @@ service_specifications:
         task_period: 500
         memory:
           ram: 200
+          rom: 2000
         network:
           consumes:
             - interface: app_6_1
@@ -170,6 +178,7 @@ service_specifications:
         task_period: 50
         memory:
           ram: 20
+          rom: 1000
         network:
           consumes:
             - interface: app_5_2
@@ -193,6 +202,7 @@ service_specifications:
         task_period: 200
         memory:
           ram: 20
+          rom: 2000
         network:
           consumes:
             - interface: app_4_1
@@ -220,6 +230,7 @@ service_specifications:
         task_period: 500
         memory:
           ram: 20
+          rom: 3000
         network:
           consumes:
             - interface: app_4_2
@@ -246,6 +257,9 @@ metrics:
     is_active: true
     weight: 0.5
   MemoryRAM:
+    is_active: true
+    weight: 0.0
+  MemoryROM:
     is_active: true
     weight: 0.0
 

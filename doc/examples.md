@@ -26,6 +26,19 @@ TAP will allocate both services on the node with 1000MB RAM because otherwise th
 make run-example FILENAME=v2/tap_memory_ram.yml
 ```
 
+## Memory - ROM
+Example to use only the MemoryROM metric. This will disable all other metrics.
+
+Configuration:
+* 2 nodes. One with 250MB ROM and one with 1000MB ROM
+* 2 services which require both 300MB ROM
+
+TAP will allocate both services on the node with 1000MB ROM because otherwise the MemoryROM constraint would be violated.
+
+```bash
+make run-example FILENAME=v2/tap_memory_rom.yml
+```
+
 ## Network Load
 Example to use only the NetworkLoad metric. This will disable all other metrics.
 

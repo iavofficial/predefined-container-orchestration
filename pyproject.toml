@@ -1,6 +1,6 @@
 [project]
 name = "predefined_container_orchestration"
-version = "0.1.0"
+version = "0.2.0"
 authors = [{name = "Lukas Stahlbock", email = "lukas.stahlbock@iav.de"}]
 description = "Algorithm to calculate orchestrations for different scenarios"
 dependencies = [
